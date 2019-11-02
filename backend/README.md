@@ -72,21 +72,156 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+DELETE '/questions/<question_id>'
+POST '/questions'
+POST '/questions/search'
+GET '/categories/<category_id>/questions'
+POST '/quizzes'
 
 GET '/categories'
-- Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
+- Fetches all available categories of questions
 - Request Arguments: None
-- Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
+- Response
+{
+  "categories": [
+    {
+      "id": 1,
+      "type": "Science"
+    },
+    {
+      "id": 2,
+      "type": "Art"
+    },
+  ],
+  "success": true
+}
 
+GET '/questions'
+- Fetches all available questions and categories
+- Request Arguments: None
+- Response
+
+{
+  "categories": [
+    {
+      "id": 1,
+      "type": "Science"
+    },
+    {
+      "id": 2,
+      "type": "Art"
+    },
+  ],
+  "questions": [
+    {
+      "answer": "Apollo 13",
+      "category": 5,
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": 5,
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+  ],
+  "success": true,
+  "total_questions": 2
+}
+
+DELETE '/questions/<question_id>'
+- Deletes the question with the id specified in the path parameter
+- Request Arguments: question_id
+- Response
+
+{
+  "deleted": 13,
+  "success": true
+}
+
+POST '/questions'
+- Creates a new question with the provided parameters
+- Request Body: {
+    "question": "What is Chukwudi's favorite programming language?",
+    "answer": "JavaScript",
+    "difficulty": 5,
+    "category": 1
+  }
+- Response
+
+{
+  "created": 30, # id of the newly created question
+  "success": true
+}
+
+POST '/questions/search'
+- Fetches all questions that have a hint of the search term
+- Request Body: {
+    'searchTerm': 'Original'
+  }
+- Response
+{
+  "questions": [
+    {
+      "answer": "Muhammad Ali",
+      "category": 4,
+      "difficulty": 1,
+      "id": 9,
+      "question": "What boxer's original name is Cassius Clay?"
+    }
+  ],
+  "total_questions": 1
+}
+
+GET '/categories/<category_id>/questions'
+- Fetches all questions for a specified category
+- Request Arguments: category_id
+- Response
+
+{
+  "questions": [
+    {
+      "answer": "The Liver",
+      "category": 1,
+      "difficulty": 4,
+      "id": 20,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": 1,
+      "difficulty": 3,
+      "id": 21,
+      "question": "Who discovered penicillin?"
+    }
+  ],
+  "total_questions": 2
+}
+
+POST '/quizzes'
+- Fetches a random question
+- Request Body: {
+	"previous_questions": [],
+	"quiz_category": {
+		"type": "Sports",
+		"id": 6
+	}
+} 
+- Response
+
+{
+  "question": {
+    "answer": "Brazil",
+    "category": 6,
+    "difficulty": 3,
+    "id": 10,
+    "question": "Which is the only team to play in every soccer World Cup tournament?"
+  }
+}
 ```
 
 
