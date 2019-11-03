@@ -63,21 +63,19 @@ def create_app(test_config=None):
 
   @app.route('/questions/<int:question_id>', methods=['DELETE'])
   def delete_questions(question_id):
+    question = Question.query.filter(Question.id == question_id).one_or_none()
     try:
-      question = Question.query.filter(Question.id == question_id).one_or_none()
-
-      if question is None:
-          abort(404)
-
       question.delete()
-
       return jsonify({
           'success': True,
           'deleted': question_id,
       })
 
     except:
-      abort(422)
+      if question is None:
+        abort(404)
+      else:
+        abort(422)
 
   @app.route('/questions', methods=['POST'])
   def create_question():
@@ -87,6 +85,11 @@ def create_app(test_config=None):
     category = body.get('category', None)
     difficulty = body.get('difficulty', None)
 
+    if question is None \
+      or answer is None \
+        or category is None \
+          or difficulty is None:
+        abort(400)
     try:
       question = Question(
         question=question,
@@ -107,7 +110,8 @@ def create_app(test_config=None):
   @app.route('/questions/search', methods=['POST'])
   def search_questions():
     search_term = request.get_json().get('searchTerm', None)
-    questions = Question.query.filter(Question.question.ilike("%" + search_term + "%")).all()
+    questions = Question.query.filter(Question.question.ilike("%" \
+      + search_term + "%")).all()
 
     return jsonify({
       'questions': [
@@ -119,13 +123,17 @@ def create_app(test_config=None):
   @app.route('/categories/<int:category_id>/questions')
   def get_questions_by_category(category_id):
     questions = Question.query.filter_by(category=category_id).all()
-
-    return jsonify({
-      'questions': [
-        question.format for question in questions
-      ],
-      'total_questions': len(questions)
-    })
+    try:
+      if len(questions) == 0:
+        return abort(404)
+      return jsonify({
+        'questions': [
+          question.format for question in questions
+        ],
+        'total_questions': len(questions)
+      })
+    except:
+      abort(404)
 
   def get_random_question():
     max_id = Question.query.order_by(Question.id.desc())[0].id
@@ -136,7 +144,9 @@ def create_app(test_config=None):
     return random_question.format
 
   def get_random_queston_by_category(category, previous_questions):
-    questions_by_category = Question.query.filter_by(category=category['id']).all()
+    questions_by_category \
+      = Question.query.filter_by(category=category['id']).all()
+
     if len(previous_questions) == len(questions_by_category):
       return None
 
@@ -162,7 +172,10 @@ def create_app(test_config=None):
         if question == current_question['id']:
           return get_quiz_question()
     else:
-      current_question = get_random_queston_by_category(quiz_category, previous_questions)
+      current_question = get_random_queston_by_category(
+        quiz_category,
+        previous_questions
+      )
     return jsonify({
       'question': current_question,
     })
@@ -190,6 +203,14 @@ def create_app(test_config=None):
           "error": 400,
           "message": "bad request"
       }), 400
+
+  @app.errorhandler(405)
+  def method_not_allowed(error):
+      return jsonify({
+          "success": False, 
+          "error": 405,
+          "message": "Method not allowed"
+      }), 405
 
   @app.errorhandler(500)
   def server_error(error):

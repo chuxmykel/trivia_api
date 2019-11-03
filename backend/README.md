@@ -222,6 +222,44 @@ POST '/quizzes'
     "question": "Which is the only team to play in every soccer World Cup tournament?"
   }
 }
+
+Errors 
+For errors, the server returns a json object with a description of the type of error. Find the description below:
+
+400 (Bad Request)
+  {
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+  }
+
+404 (Resource Not Found)
+  {
+    "success": False, 
+    "error": 404,
+    "message": "resource not found"
+  }
+
+405 (Method not allowed)
+  {
+    "success": False, 
+    "error": 405,
+    "message": "Method not allowed"
+  }
+
+422 (Unprocessable entity)
+  {
+    "success": False, 
+    "error": 422,
+    "message": "unprocessable
+  }
+
+500 (Internal server error)
+  {
+    "success": False, 
+    "error": 500,
+    "message": "Internal server error
+  }
 ```
 
 
